@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Deprem Indicator Applet</string>
+    <string name="new_deprem">%1s Earth Quake at %2s %3s</string>
 </resources>

@@ -84,13 +84,13 @@ class DepremService : Service() {
                 .response { _, _, result ->
                     val (bytes, error) = result
                     if (bytes != null) {
-                        val eqRows =
-                            String(bytes).split("\r\n").filter { it.contains(Constants.keyword) }
+                        val html = String(bytes)
+                        val eqRows = html.split("\r\n").filter { it.contains(Constants.keyword) }
                         if (AppData.lastIndex == 0) { //First time checking
                             AppData.lastIndex = eqRows.lastIndex
                         } else if (AppData.lastIndex < eqRows.lastIndex) {
                             AppData.lastIndex = eqRows.lastIndex
-                            notifyNewDeprem(eqRows.last())
+                            notifyNewDeprem(getTitle(parseLastRow(eqRows)))
                         }
                     } else {
                         Log.d("Response Error:", "${error?.message}")
@@ -101,8 +101,21 @@ class DepremService : Service() {
         }
     }
 
-    private fun notifyNewDeprem(last: String) {
-        builder.setContentTitle(last)
+    private fun parseLastRow(eqRows: List<String>): List<String> {
+        return eqRows.last().split(" ")
+    }
+
+    private fun getTitle(data: List<String>): String {
+        return applicationContext.resources.getString(
+            R.string.new_deprem,
+            data[6],
+            data[0], data[1]
+        )
+    }
+
+    private fun notifyNewDeprem(title: String) {
+        builder.setContentTitle(title)
+        builder.setContentText("But hey!, You are  alive if you're reading this!")
         val notification = builder.notification
         builder.setPriority(Notification.PRIORITY_MAX)
         notificationManager.notify(R.string.app_name, notification)

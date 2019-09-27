@@ -12,9 +12,10 @@ import kotlinx.coroutines.*
 
 
 class DepremService : Service() {
+    private val NOTIFICATION_ID: Int = 9826
+    private val CHANNEL_ID = "DEPREM-INDICATOR-APPLET"
     private var wakeLock: PowerManager.WakeLock? = null
     private var isServiceRunning = false
-    private val channelID = "DEPREM-INDICATOR-APPLET"
     private lateinit var builder: Notification.Builder
     private lateinit var notificationManager: NotificationManager
 
@@ -34,8 +35,18 @@ class DepremService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        val notification = createNotification()
-        startForeground(1, notification)
+        initNotification()
+        val notification = createStickyNotification()
+        startForeground(NOTIFICATION_ID, notification)
+    }
+
+    private fun initNotification() {
+        builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(
+            this,
+            CHANNEL_ID
+        ) else Notification.Builder(this)
+        notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
 
     private fun startService() {
@@ -121,17 +132,11 @@ class DepremService : Service() {
         notificationManager.notify(R.string.app_name, notification)
     }
 
-    private fun createNotification(): Notification {
-        builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(
-            this,
-            channelID
-        ) else Notification.Builder(this)
-        notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private fun createStickyNotification(): Notification {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                channelID,
+                CHANNEL_ID,
                 "DEPREM-INDICATOR-APPLET",
                 NotificationManager.IMPORTANCE_HIGH
             ).let {
@@ -150,7 +155,7 @@ class DepremService : Service() {
 
         return builder
             .setContentTitle("Deprem Indicator Applet")
-            .setContentText("Locked and Loaded!")
+            .setContentText("Service is Running")
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setPriority(Notification.PRIORITY_LOW)

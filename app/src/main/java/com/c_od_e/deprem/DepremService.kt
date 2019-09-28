@@ -96,7 +96,7 @@ class DepremService : Service() {
                     val (bytes, error) = result
                     if (bytes != null) {
                         val html = String(bytes)
-                        val eqRows = html.split("\r\n").filter { it.contains(Constants.keyword) }
+                        val eqRows = html.split("\r\n").filter { it.contains(Constants.keywordEN) || it.contains(Constants.keywordTR) }
                         if (AppData.lastIndex == 0) { //First time checking
                             AppData.lastIndex = eqRows.lastIndex
                         } else if (AppData.lastIndex < eqRows.lastIndex) {

@@ -101,7 +101,7 @@ class DepremService : Service() {
                             AppData.lastIndex = eqRows.lastIndex
                         } else if (AppData.lastIndex < eqRows.lastIndex) {
                             AppData.lastIndex = eqRows.lastIndex
-                            notifyNewDeprem(getTitle(parseLastRow(eqRows)))
+                            notifyNewDeprem(getTitle(pareLatestEq(eqRows)))
                         }
                     } else {
                         Log.d("Response Error:", "${error?.message}")
@@ -112,8 +112,8 @@ class DepremService : Service() {
         }
     }
 
-    private fun parseLastRow(eqRows: List<String>): List<String> {
-        return eqRows.last().split(" ")
+    private fun pareLatestEq(eqRows: List<String>): List<String> {
+        return eqRows.first().split(" ")
     }
 
     private fun getTitle(data: List<String>): String {
